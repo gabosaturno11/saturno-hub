@@ -1005,6 +1005,7 @@ mark.hl.resolved {
               <option>X</option>
             </select>
             <button class="btn sm" id="exportCal">Export Calendar</button>
+            <button class="btn sm" id="clearCal" style="color: var(--error);">Clear All</button>
           </div>
         </div>
         <div class="calendar" id="calGrid"></div>
@@ -1670,6 +1671,13 @@ $('#addPost').addEventListener('click', () => {
 });
 
 $('#exportCal').addEventListener('click', () => downloadJSON('sm_calendar.json', load('SM_CAL', [])));
+$('#clearCal').addEventListener('click', () => {
+  if (confirm('Clear all calendar entries?')) {
+    store('SM_CAL', []);
+    drawCalendar();
+    toast('Calendar cleared');
+  }
+});
 
 // ============ WRITING HUB ============
 const editor = $('#editor');
