@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saturno Movement Studio</title>
+<style>
+/* CLAUDE STYLE: Minimal, Clean, Professional */
+:root {
+  --bg: #0d0d0d;
+  --surface: #141414;
+  --surface2: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e5e5e5;
+  --muted: #737373;
+  --accent: #d97706;
+  --accent-dim: rgba(217, 119, 6, 0.15);
+  --success: #22c55e;
+  --error: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.01em; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1rem; }
+h4 { font-size: 0.875rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Layout */
+.app { display: flex; height: 100vh; }
+
+.sidebar {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header h1 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sidebar-header .version {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.nav-section {
+  padding: 16px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.nav-item .kbd {
+  font-size: 0.7rem;
+  opacity: 0.5;
+  font-family: ui-monospace, monospace;
+}
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.header-title {
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* Sections */
+.section { display: none; }
+.section.active { display: block; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  background: var(--surface2);
+  border-color: #404040;
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+.btn.primary:hover {
+  opacity: 0.9;
+}
+
+.btn.ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn.ghost:hover {
+  background: var(--surface2);
+}
+
+.btn.sm {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+/* Inputs */
+input, select, textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Grid */
+.grid { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Flex */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-2 { gap: 8px; }
+.gap-4 { gap: 16px; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.flex-1 { flex: 1; }
+
+/* Utils */
+.muted { color: var(--muted); }
+.mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.mb-4 { margin-bottom: 16px; }
+.mt-4 { margin-top: 16px; }
+.hidden { display: none !important; }
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Progress */
+.progress {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+/* KPI Cards */
+.kpi {
+  text-align: center;
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+  font-family: ui-monospace, monospace;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+/* META CONTROL - DAW Style */
+.meta-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 320px;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  height: calc(100vh - 140px);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Library Panel */
+.library { grid-row: 1 / 4; }
+
+.library-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: grab;
+  transition: all 0.15s;
+}
+
+.library-item:hover {
+  border-color: var(--accent);
+}
+
+.library-item:active {
+  cursor: grabbing;
+}
+
+/* Preview Panel */
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+/* Timeline Panel */
+.timeline { grid-column: 2; }
+
+.tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+}
+
+.track {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 56px;
+  position: relative;
+}
+
+.track-label {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 24px 10px 8px 10px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.clip {
+  min-width: 120px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.clip:hover {
+  background: rgba(217, 119, 6, 0.25);
+}
+
+.clip.selected {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.clip-name {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.clip-meta {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* Inspector Panel */
+.inspector { grid-row: 1 / 4; }
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.field input, .field select, .field textarea {
+  width: 100%;
+}
+
+/* Stacks Panel */
+.stacks {
+  grid-column: 2;
+}
+
+/* Writing Hub */
+.writing-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 16px;
+  height: calc(100vh - 140px);
+}
+
+.editor {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 400px;
+  font-size: 1rem;
+  line-height: 1.8;
+  overflow-y: auto;
+  outline: none;
+}
+
+.editor:focus {
+  border-color: var(--accent);
+}
+
+.editor:empty:before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+}
+
+mark.hl {
+  background: var(--accent-dim);
+  border-bottom: 2px solid var(--accent);
+  padding: 0 2px;
+}
+
+mark.hl.resolved {
+  opacity: 0.5;
+  border-bottom-style: dashed;
+}
+
+/* Comments Panel */
+.comments-panel { overflow: hidden; }
+
+.comment {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* Content Calendar */
+.calendar {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-cell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px;
+  min-height: 80px;
+}
+
+.cal-cell.header {
+  background: var(--surface2);
+  min-height: auto;
+  text-align: center;
+  font-weight: 500;
+}
+
+.cal-post {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 6px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+}
+
+/* Projects */
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 0.15s;
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+}
+
+.project-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.project-status.active { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+.project-status.review { background: rgba(217, 119, 6, 0.15); color: var(--accent); }
+.project-status.feedback { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
+/* Assets */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+
+.drop-zone.active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.asset-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+/* AI Hub */
+.prompt-editor {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+  min-height: 200px;
+  resize: vertical;
+  width: 100%;
+}
+
+/* Command Palette */
+.palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  z-index: 100;
+}
+
+.palette-overlay.active {
+  display: flex;
+}
+
+.palette-box {
+  width: min(600px, 90vw);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.palette-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  font-size: 1rem;
+}
+
+.palette-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.palette-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.palette-item:hover {
+  background: var(--surface2);
+}
+
+.palette-item:last-child {
+  border-bottom: none;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: min(500px, 90vw);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 200;
+}
+
+.toast.active {
+  display: block;
+}
+
+/* Command Log */
+.cmd-log {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+/* Links */
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.external-link:hover {
+  text-decoration: underline;
+}
+
+/* Quick Links */
+.quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>Saturno Studio</h1>
+      <div class="version">Movement Program Builder</div>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-item active" data-section="dashboard">
+        Dashboard
+        <span class="kbd">⌘1</span>
+      </div>
+      <div class="nav-item" data-section="meta">
+        Meta Control
+        <span class="kbd">⌘2</span>
+      </div>
+      <div class="nav-item" data-section="calendar">
+        SM Lab
+        <span class="kbd">⌘3</span>
+      </div>
+      <div class="nav-item" data-section="writing">
+        Writing Hub
+        <span class="kbd">⌘4</span>
+      </div>
+      <div class="nav-item" data-section="collab">
+        Collaboration
+        <span class="kbd">⌘5</span>
+      </div>
+      <div class="nav-item" data-section="assets">
+        Assets
+        <span class="kbd">⌘6</span>
+      </div>
+      <div class="nav-item" data-section="ai">
+        AI Hub
+        <span class="kbd">⌘7</span>
+      </div>
+      <div class="nav-item" data-section="webhub" style="border-top: 1px solid var(--border); margin-top: 8px; padding-top: 12px;">
+        Webhub
+        <span class="kbd">⌘8</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <input type="text" id="globalSearch" placeholder="Search... ⌘K" style="width: 100%">
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="header">
+      <div class="header-title" id="headerTitle">Dashboard</div>
+      <div class="header-actions">
+        <button class="btn sm" id="saveAll">Save All</button>
+        <button class="btn sm primary" id="exportAll">Export JSON</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <section id="sec-dashboard" class="section active">
+        <div class="grid grid-4 mb-4">
+          <div class="card kpi">
+            <div class="kpi-value" id="kpiMoves">0</div>
+            <div class="kpi-label">Movements</div>
+            <div class="progress"><div class="progress-bar" id="progMoves" style="width: 0%"></div></div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-value" id="kpiClips">0</div>
+            <div class="kpi-label">Timeline Clips</div>
+            <div class="progress"><div class="progress-bar" id="progClips" style="width: 0%"></div></div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-value" id="kpiProjects">0</div>
+            <div class="kpi-label">Projects</div>
+            <div class="progress"><div class="progress-bar" id="progProjects" style="width: 0%"></div></div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-value" id="kpiDrafts">0</div>
+            <div class="kpi-label">Drafts</div>
+            <div class="progress"><div class="progress-bar" id="progDrafts" style="width: 0%"></div></div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3>Quick Actions</h3>
+            </div>
+            <div class="flex gap-2" style="flex-wrap: wrap">
+              <button class="btn sm" id="qaNewProgram">+ Program</button>
+              <button class="btn sm" id="qaNewPost">+ SM Post</button>
+              <button class="btn sm" id="qaNewDoc">+ Document</button>
+              <button class="btn sm" id="qaCheat">Movement DNA</button>
+              <button class="btn sm" id="qaOutline">Generate Outline</button>
+            </div>
+            <div class="quick-links">
+              <h4 style="width: 100%; margin-top: 16px;">External Tools</h4>
+              <a href="https://www.microsoft.com/en-us/microsoft-365/word" target="_blank" class="external-link">Microsoft Word</a>
+              <a href="https://docs.google.com" target="_blank" class="external-link">Google Docs</a>
+              <a href="https://gabosaturno11.github.io/saturno-command-center/" target="_blank" class="external-link">Command Center</a>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Command Log</h3>
+            </div>
+            <div class="cmd-log" id="cmdLog">ready...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- META CONTROL -->
+      <section id="sec-meta" class="section">
+        <div class="meta-layout">
+          <!-- Library -->
+          <div class="panel library">
+            <div class="panel-header">
+              Movement Library
+              <button class="btn sm ghost" id="importCSVBtn">Import</button>
+            </div>
+            <div style="padding: 12px; border-bottom: 1px solid var(--border)">
+              <input type="text" id="libSearch" placeholder="Search movements..." style="width: 100%">
+              <input type="file" id="csvInput" accept=".csv,.json" class="hidden">
+            </div>
+            <div class="panel-content" id="movementList"></div>
+          </div>
+
+          <!-- Preview -->
+          <div class="card" style="grid-column: 2">
+            <div class="preview" id="previewArea">
+              <span>Drop media here to preview</span>
+            </div>
+            <input type="file" id="prevFile" accept="image/*,video/*" style="margin-top: 12px; width: 100%">
+          </div>
+
+          <!-- Timeline -->
+          <div class="panel timeline">
+            <div class="panel-header">
+              Timeline
+              <div class="flex gap-2">
+                <button class="btn sm ghost" id="clearTimeline">Clear</button>
+                <button class="btn sm primary" id="exportTimeline">Export</button>
+              </div>
+            </div>
+            <div class="tracks" id="tracks"></div>
+          </div>
+
+          <!-- Inspector -->
+          <div class="panel inspector">
+            <div class="panel-header">Inspector — Movement DNA</div>
+            <div class="panel-content">
+              <div id="inspectorEmpty" class="muted">Select a clip to edit its DNA.</div>
+              <div id="inspectorForm" class="hidden">
+                <div class="field">
+                  <label>Movement Name</label>
+                  <input type="text" id="dna_name">
+                </div>
+                <div class="grid grid-2">
+                  <div class="field">
+                    <label>Pattern</label>
+                    <select id="dna_pattern">
+                      <option>Push Horizontal</option>
+                      <option>Push Vertical</option>
+                      <option>Pull Horizontal</option>
+                      <option>Pull Vertical</option>
+                      <option>Hinge</option>
+                      <option>Squat</option>
+                      <option>Core</option>
+                      <option>Carry</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Category</label>
+                    <select id="dna_category">
+                      <option>Basics</option>
+                      <option>Strength</option>
+                      <option>Skill</option>
+                      <option>Hypertrophy</option>
+                      <option>Mobility</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid grid-2">
+                  <div class="field">
+                    <label>RPE (1-10)</label>
+                    <input type="number" id="dna_rpe" min="1" max="10">
+                  </div>
+                  <div class="field">
+                    <label>Tempo</label>
+                    <input type="text" id="dna_tempo" placeholder="3-1-1">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Sets × Reps</label>
+                  <input type="text" id="dna_sr" placeholder="4×8">
+                </div>
+                <div class="field">
+                  <label>Progression</label>
+                  <input type="text" id="dna_progression" placeholder="Incline → Standard → Ring">
+                </div>
+                <div class="field">
+                  <label>Antagonist Pair</label>
+                  <input type="text" id="dna_antagonist" placeholder="Ring Row">
+                </div>
+                <div class="field">
+                  <label>Tags</label>
+                  <input type="text" id="dna_tags" placeholder="#basics #push">
+                </div>
+                <div class="field">
+                  <label>Notes</label>
+                  <textarea id="dna_notes" rows="3" placeholder="Cues, regressions, setup..."></textarea>
+                </div>
+                <button class="btn primary" id="saveDNA" style="width: 100%">Save DNA</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stacks -->
+          <div class="panel stacks">
+            <div class="panel-header">Stacks</div>
+            <div class="panel-content muted">
+              Audio cues, tempo beeps, coaching notes (future feature)
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-4">
+          <button class="btn" id="cheatBtn">Movement DNA Cheat Sheet</button>
+          <button class="btn primary" id="outlineFromTimeline">Generate Session Outline → Writing</button>
+        </div>
+      </section>
+
+      <!-- SM LAB / CALENDAR -->
+      <section id="sec-calendar" class="section">
+        <div class="flex justify-between items-center mb-4">
+          <h2>Content Calendar</h2>
+          <div class="flex gap-2">
+            <select id="smPlatform">
+              <option>Instagram</option>
+              <option>YouTube</option>
+              <option>Newsletter</option>
+              <option>X</option>
+            </select>
+            <button class="btn sm" id="exportCal">Export Calendar</button>
+          </div>
+        </div>
+        <div class="calendar" id="calGrid"></div>
+        <div class="flex gap-2 mt-4">
+          <input type="text" id="newPostTitle" placeholder="Post idea..." style="flex: 1">
+          <select id="newPostDay">
+            <option value="1">Mon</option>
+            <option value="2">Tue</option>
+            <option value="3">Wed</option>
+            <option value="4">Thu</option>
+            <option value="5">Fri</option>
+            <option value="6">Sat</option>
+            <option value="7">Sun</option>
+          </select>
+          <button class="btn primary" id="addPost">Add to Calendar</button>
+        </div>
+      </section>
+
+      <!-- WRITING HUB -->
+      <section id="sec-writing" class="section">
+        <div class="flex gap-2 mb-4">
+          <input type="text" id="docTitle" placeholder="Document title..." style="flex: 1">
+          <button class="btn" id="shareDocBtn">Share</button>
+          <button class="btn" id="toggleComments">Comments</button>
+          <button class="btn primary" id="saveDoc">Save</button>
+        </div>
+        <div class="writing-layout">
+          <div id="editor" class="editor" contenteditable="true" data-placeholder="Start writing... Select text to add comments."></div>
+          <div class="panel comments-panel hidden" id="commentsPanel">
+            <div class="panel-header">
+              Comments
+              <select id="commentFilter">
+                <option value="all">All</option>
+                <option value="unresolved">Unresolved</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="panel-content" id="commentsList"></div>
+            <div style="padding: 12px; border-top: 1px solid var(--border)">
+              <textarea id="newComment" rows="3" placeholder="Add a comment..." style="width: 100%; margin-bottom: 8px"></textarea>
+              <button class="btn primary" id="addComment" style="width: 100%">Add Comment</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLLABORATION -->
+      <section id="sec-collab" class="section">
+        <div class="flex justify-between items-center mb-4">
+          <h2>Projects</h2>
+          <button class="btn" id="newProject">+ New Project</button>
+        </div>
+        <div class="flex gap-2 mb-4">
+          <select id="fStatus">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="review">In Review</option>
+            <option value="feedback">Feedback</option>
+            <option value="completed">Completed</option>
+          </select>
+          <select id="fSort">
+            <option value="activity">Recent Activity</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+          <input type="text" id="fSearch" placeholder="Search projects..." style="flex: 1">
+        </div>
+        <div class="grid grid-3" id="projects"></div>
+        <div class="card mt-4">
+          <div class="card-header"><h3>Feedback Requests</h3></div>
+          <div id="feedbackList"></div>
+        </div>
+      </section>
+
+      <!-- ASSETS -->
+      <section id="sec-assets" class="section">
+        <div class="flex justify-between items-center mb-4">
+          <h2>Asset Vault</h2>
+          <div class="flex gap-2">
+            <input type="text" id="assetFilter" placeholder="Filter assets...">
+            <button class="btn sm" id="clearAssets">Clear All</button>
+          </div>
+        </div>
+        <div class="drop-zone" id="dropZone">
+          <p>Drag & drop files here</p>
+          <p class="muted text-sm">or click to select</p>
+          <input type="file" id="assetPick" multiple style="display: none">
+        </div>
+        <div id="assetList"></div>
+
+        <div class="card mt-4">
+          <div class="card-header"><h3>Video Analyzer</h3></div>
+          <div class="flex gap-2">
+            <input type="text" id="vTitle" placeholder="Session title">
+            <input type="file" id="vFile" accept="video/*">
+            <button class="btn" id="vLoad">Load</button>
+          </div>
+          <video id="vPlayer" controls class="hidden" style="width: 100%; margin-top: 12px; border-radius: 6px"></video>
+          <div class="flex gap-2 mt-4">
+            <input type="text" id="markNote" placeholder="Marker note..." style="flex: 1">
+            <button class="btn sm" id="markAdd">+ Marker</button>
+            <button class="btn sm" id="markExport">Export</button>
+          </div>
+          <div class="cmd-log mt-4" id="markList" style="min-height: 80px"></div>
+        </div>
+      </section>
+
+      <!-- AI HUB -->
+      <section id="sec-ai" class="section">
+        <h2 class="mb-4">AI Hub</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-header"><h3>Prompt Studio — Program Generator</h3></div>
+            <textarea id="promptProgram" class="prompt-editor" placeholder="System: You are a program design assistant...
+
+User: Generate a 4-week push-pull program using the following Movement DNA JSON..."></textarea>
+            <button class="btn primary mt-4" id="copyProgramPrompt">Copy Prompt with Timeline Data</button>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Router</h3></div>
+            <div class="flex justify-between mb-4">
+              <span class="muted">Tasks:</span>
+              <span>writing • code • assets</span>
+            </div>
+            <div class="flex justify-between mb-4">
+              <span class="muted">Next action:</span>
+              <span class="mono" id="routerNext">idle</span>
+            </div>
+            <button class="btn" id="routeFromTimeline">Use Timeline as Input</button>
+          </div>
+        </div>
+        <div class="card mt-4">
+          <div class="card-header"><h3>Quick Commands</h3></div>
+          <div class="flex gap-2">
+            <button class="btn" id="cmdDeploy">deploy-hub</button>
+            <button class="btn" id="cmdLive">hub-live</button>
+            <button class="btn" id="cmdGit">hub-github</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- WEBHUB -->
+      <section id="sec-webhub" class="section">
+        <div class="flex justify-between items-center mb-4">
+          <h2>Webhub — Live Communication</h2>
+          <div class="flex gap-2">
+            <span class="muted" id="webhubStatus" style="line-height:2.2">Offline</span>
+            <button class="btn sm" id="webhubRefresh">Refresh</button>
+            <button class="btn sm primary" id="webhubConnect">Connect</button>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr 280px; gap: 16px;">
+          <!-- Message Feed -->
+          <div class="card" style="height: 60vh; display: flex; flex-direction: column;">
+            <div class="card-header" style="flex-shrink:0">
+              <h3>Message Feed</h3>
+              <span class="muted text-sm" id="webhubMsgCount">0 messages</span>
+            </div>
+            <div id="webhubMessages" style="flex: 1; overflow-y: auto; padding: 12px; font-family: ui-monospace, monospace; font-size: 0.8rem; line-height: 1.8;"></div>
+            <div style="padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0;">
+              <div class="flex gap-2">
+                <select id="webhubSender" style="width: 140px;">
+                  <option value="GABO">GABO</option>
+                  <option value="CC1">CC1</option>
+                  <option value="CC2">CC2</option>
+                  <option value="CL2">CL2</option>
+                </select>
+                <input type="text" id="webhubInput" placeholder="Type a message..." style="flex: 1" />
+                <button class="btn primary" id="webhubSend">Send</button>
+              </div>
+            </div>
+          </div>
+          <!-- Status Panel -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="card">
+              <div class="card-header"><h3>Config</h3></div>
+              <div class="field" style="margin-top:8px">
+                <label>GitHub Repo</label>
+                <input type="text" id="webhubRepo" value="gabosaturno11/saturno-hub" style="width:100%" />
+              </div>
+              <div class="field">
+                <label>Message File</label>
+                <input type="text" id="webhubFile" value="webhub_messages.json" readonly style="width:100%; opacity:0.6" />
+              </div>
+              <div class="field">
+                <label>Poll Interval</label>
+                <select id="webhubPoll" style="width:100%">
+                  <option value="5000">5 seconds</option>
+                  <option value="10000" selected>10 seconds</option>
+                  <option value="30000">30 seconds</option>
+                  <option value="0">Manual only</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>GitHub Token <span class="muted">(for sending)</span></label>
+                <input type="password" id="webhubToken" placeholder="ghp_..." style="width:100%" />
+              </div>
+              <button class="btn primary mt-4" id="webhubSaveConfig" style="width:100%">Save Config</button>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Active Instances</h3></div>
+              <div id="webhubInstances" style="padding: 8px;">
+                <div class="muted">Connect to see active instances</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Quick Actions</h3></div>
+              <div class="flex gap-2" style="flex-wrap: wrap; padding: 8px;">
+                <button class="btn sm" id="webhubExport">Export Log</button>
+                <button class="btn sm" id="webhubClear">Clear Local</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODALS -->
+
+<!-- Share Modal -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Share Document</h3>
+      <button class="btn ghost sm" id="closeShare">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Permission</label>
+        <select id="shareMode" style="width: 100%">
+          <option value="view">View Only</option>
+          <option value="comment">Can Comment</option>
+          <option value="edit">Can Edit</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Share Link</label>
+        <div class="flex gap-2">
+          <input type="text" id="shareLink" readonly style="flex: 1">
+          <button class="btn primary" id="doShare">Generate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cheat Sheet Modal -->
+<div class="modal-overlay" id="cheatModal">
+  <div class="modal-box" style="max-width: 700px">
+    <div class="modal-header">
+      <h3>Movement DNA — Cheat Sheet</h3>
+      <button class="btn ghost sm" id="closeCheat">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid grid-2" style="gap: 8px">
+        <div class="card"><strong>Push Horizontal</strong><p class="muted text-sm">Push-ups, Ring push-ups, Bench dips</p></div>
+        <div class="card"><strong>Push Vertical</strong><p class="muted text-sm">Pike, HSPU progressions</p></div>
+        <div class="card"><strong>Pull Horizontal</strong><p class="muted text-sm">Rows, Ring rows</p></div>
+        <div class="card"><strong>Pull Vertical</strong><p class="muted text-sm">Pull-ups, Chin-ups</p></div>
+        <div class="card"><strong>Hinge</strong><p class="muted text-sm">Hip hinge patterns</p></div>
+        <div class="card"><strong>Squat</strong><p class="muted text-sm">BW squat, Pistol progressions</p></div>
+        <div class="card"><strong>Core</strong><p class="muted text-sm">Hollow, Arch, L-sit</p></div>
+        <div class="card"><strong>Carry / Brace</strong><p class="muted text-sm">Unilateral carries, holds</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Command Palette -->
+<div class="palette-overlay" id="palette">
+  <div class="palette-box">
+    <input type="text" id="palInput" class="palette-input" placeholder="Type a command...">
+    <div class="palette-list" id="palList"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ UTILITIES ============
+const $ = (s, p = document) => p.querySelector(s);
+const $$ = (s, p = document) => [...p.querySelectorAll(s)];
+const store = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const load = (k, d = null) => JSON.parse(localStorage.getItem(k) || JSON.stringify(d));
+
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 2000);
+}
+
+function downloadJSON(name, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+}
+
+// ============ NAVIGATION ============
+function goTo(section) {
+  $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.section === section));
+  $$('.section').forEach(s => s.classList.toggle('active', s.id === 'sec-' + section));
+  $('#headerTitle').textContent = {
+    dashboard: 'Dashboard',
+    meta: 'Meta Control — Program Builder',
+    calendar: 'SM Lab — Content Calendar',
+    writing: 'Writing Hub',
+    collab: 'Collaboration',
+    assets: 'Asset Vault',
+    ai: 'AI Hub',
+    webhub: 'Webhub — Live Communication'
+  }[section] || 'Dashboard';
+}
+
+$$('.nav-item').forEach(n => n.addEventListener('click', () => goTo(n.dataset.section)));
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  const key = (e.metaKey || e.ctrlKey) ? e.key : null;
+  if (key === '1') goTo('dashboard');
+  if (key === '2') goTo('meta');
+  if (key === '3') goTo('calendar');
+  if (key === '4') goTo('writing');
+  if (key === '5') goTo('collab');
+  if (key === '6') goTo('assets');
+  if (key === '7') goTo('ai');
+  if (key === '8') goTo('webhub');
+  if (key === 'k') { e.preventDefault(); openPalette(); }
+  if (e.key === 'Escape') closePalette();
+});
+
+// ============ DASHBOARD KPIs ============
+function refreshKPIs() {
+  const lib = load('LIB', defaultLIB);
+  const tl = load('TL_STATE', {});
+  const projects = load('PROJECTS', defaultProjects);
+  const doc = load('DOC', { title: '', body: '' });
+
+  const clipCount = Object.values(tl).reduce((a, x) => a + (x?.length || 0), 0);
+
+  $('#kpiMoves').textContent = lib.length;
+  $('#kpiClips').textContent = clipCount;
+  $('#kpiProjects').textContent = projects.length;
+  $('#kpiDrafts').textContent = doc.body ? 1 : 0;
+
+  $('#progMoves').style.width = Math.min(lib.length * 5, 100) + '%';
+  $('#progClips').style.width = Math.min(clipCount * 10, 100) + '%';
+  $('#progProjects').style.width = Math.min(projects.length * 15, 100) + '%';
+  $('#progDrafts').style.width = doc.body ? '100%' : '5%';
+}
+
+$('#qaCheat').addEventListener('click', () => $('#cheatModal').classList.add('active'));
+$('#qaOutline').addEventListener('click', outlineFromTimeline);
+
+// ============ META CONTROL ============
+const TRACKS = [
+  { id: 't1', label: 'Upper Push' },
+  { id: 't2', label: 'Upper Pull' },
+  { id: 't3', label: 'Core' },
+  { id: 't4', label: 'Lower Body' },
+  { id: 't5', label: 'Skill' }
+];
+
+const defaultLIB = [
+  { name: 'Push-up', pattern: 'Push Horizontal', category: 'Basics' },
+  { name: 'Ring Row', pattern: 'Pull Horizontal', category: 'Basics' },
+  { name: 'Pike Push-up', pattern: 'Push Vertical', category: 'Strength' },
+  { name: 'Pull-up', pattern: 'Pull Vertical', category: 'Strength' },
+  { name: 'Bodyweight Squat', pattern: 'Squat', category: 'Basics' },
+  { name: 'Hollow Hold', pattern: 'Core', category: 'Strength' },
+  { name: 'L-Sit (tuck)', pattern: 'Core', category: 'Skill' }
+];
+
+let LIB = load('LIB', defaultLIB);
+let TL_STATE = load('TL_STATE', {});
+let currentKey = null;
+
+function drawTracks() {
+  const container = $('#tracks');
+  container.innerHTML = '';
+
+  TRACKS.forEach(tr => {
+    const track = document.createElement('div');
+    track.className = 'track';
+    track.dataset.track = tr.id;
+    track.innerHTML = `
+      <div class="track-label">${tr.label}</div>
+      <div class="lane"></div>
+    `;
+
+    const lane = track.querySelector('.lane');
+    lane.addEventListener('dragover', e => e.preventDefault());
+    lane.addEventListener('drop', e => {
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      addClip(tr.id, data);
+    });
+
+    container.appendChild(track);
+  });
+
+  renderTimeline();
+}
+
+function renderTimeline() {
+  TRACKS.forEach(tr => {
+    const lane = $(`.track[data-track="${tr.id}"] .lane`);
+    if (!lane) return;
+    lane.innerHTML = '';
+
+    (TL_STATE[tr.id] || []).forEach((clip, idx) => {
+      const key = `${tr.id}:${idx}`;
+      const el = document.createElement('div');
+      el.className = 'clip';
+      el.dataset.key = key;
+      el.innerHTML = `
+        <div class="clip-name">${clip.name}</div>
+        <div class="clip-meta">${clip.pattern}</div>
+      `;
+      el.addEventListener('click', () => selectClip(key, clip));
+      lane.appendChild(el);
+    });
+  });
+
+  refreshKPIs();
+}
+
+function addClip(trackId, movement) {
+  TL_STATE[trackId] = TL_STATE[trackId] || [];
+  TL_STATE[trackId].push({
+    name: movement.name,
+    pattern: movement.pattern,
+    category: movement.category
+  });
+  store('TL_STATE', TL_STATE);
+  renderTimeline();
+}
+
+function selectClip(key, clip) {
+  currentKey = key;
+  $$('.clip').forEach(c => c.classList.remove('selected'));
+  $(`.clip[data-key="${key}"]`)?.classList.add('selected');
+
+  $('#inspectorEmpty').classList.add('hidden');
+  $('#inspectorForm').classList.remove('hidden');
+
+  $('#dna_name').value = clip.name || '';
+  $('#dna_pattern').value = clip.pattern || 'Core';
+  $('#dna_category').value = clip.category || 'Basics';
+  $('#dna_rpe').value = clip.rpe || '';
+  $('#dna_tempo').value = clip.tempo || '';
+  $('#dna_sr').value = clip.sr || '';
+  $('#dna_progression').value = clip.progression || '';
+  $('#dna_antagonist').value = clip.antagonist || '';
+  $('#dna_tags').value = clip.tags || '';
+  $('#dna_notes').value = clip.notes || '';
+}
+
+$('#saveDNA').addEventListener('click', () => {
+  if (!currentKey) return;
+  const [trackId, idx] = currentKey.split(':');
+  const clip = TL_STATE[trackId][+idx];
+
+  Object.assign(clip, {
+    name: $('#dna_name').value,
+    pattern: $('#dna_pattern').value,
+    category: $('#dna_category').value,
+    rpe: $('#dna_rpe').value,
+    tempo: $('#dna_tempo').value,
+    sr: $('#dna_sr').value,
+    progression: $('#dna_progression').value,
+    antagonist: $('#dna_antagonist').value,
+    tags: $('#dna_tags').value,
+    notes: $('#dna_notes').value
+  });
+
+  store('TL_STATE', TL_STATE);
+  renderTimeline();
+  toast('DNA saved');
+});
+
+$('#clearTimeline').addEventListener('click', () => {
+  TL_STATE = {};
+  store('TL_STATE', TL_STATE);
+  renderTimeline();
+});
+
+$('#exportTimeline').addEventListener('click', () => downloadJSON('movement_timeline.json', TL_STATE));
+
+// Library
+function drawLibrary(filter = '') {
+  const list = $('#movementList');
+  list.innerHTML = '';
+
+  LIB.filter(m => m.name.toLowerCase().includes(filter.toLowerCase())).forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'library-item';
+    el.draggable = true;
+    el.innerHTML = `
+      <span>${m.name}</span>
+      <span class="badge">${m.pattern}</span>
+    `;
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', JSON.stringify(m));
+    });
+    list.appendChild(el);
+  });
+}
+
+$('#libSearch').addEventListener('input', e => drawLibrary(e.target.value));
+$('#importCSVBtn').addEventListener('click', () => $('#csvInput').click());
+$('#csvInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const text = await file.text();
+  try {
+    let data = [];
+    if (file.name.endsWith('.json')) {
+      data = JSON.parse(text);
+    } else {
+      const rows = text.split(/\r?\n/).filter(Boolean);
+      const headers = rows.shift().split(',').map(h => h.trim().toLowerCase());
+      data = rows.map(r => {
+        const cols = r.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = cols[i]?.trim());
+        return {
+          name: obj.name || obj.movement || 'Movement',
+          pattern: obj.pattern || 'Core',
+          category: obj.category || 'Basics'
+        };
+      });
+    }
+    LIB = data;
+    store('LIB', LIB);
+    drawLibrary();
+    refreshKPIs();
+    toast('Library imported');
+  } catch (err) {
+    toast('Import failed');
+  }
+});
+
+// Preview
+$('#prevFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const area = $('#previewArea');
+  area.innerHTML = '';
+
+  if (file.type.startsWith('image/')) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.style.maxWidth = '100%';
+    img.style.borderRadius = '6px';
+    area.appendChild(img);
+  } else if (file.type.startsWith('video/')) {
+    const vid = document.createElement('video');
+    vid.src = URL.createObjectURL(file);
+    vid.controls = true;
+    vid.style.maxWidth = '100%';
+    vid.style.borderRadius = '6px';
+    area.appendChild(vid);
+  }
+});
+
+function outlineFromTimeline() {
+  const blocks = Object.entries(TL_STATE).flatMap(([k, arr]) =>
+    (arr || []).map((c, i) => ({ track: k, index: i, ...c }))
+  );
+
+  if (!blocks.length) {
+    toast('Timeline is empty');
+    return;
+  }
+
+  const lines = ['# Session Outline', '', ...blocks.map((b, i) =>
+    `${i + 1}. ${b.name} — ${b.pattern}${b.sr ? ` — ${b.sr}` : ''}${b.rpe ? ` (RPE ${b.rpe})` : ''}`
+  )];
+
+  goTo('writing');
+  $('#docTitle').value = 'Auto-Outline from Timeline';
+  $('#editor').innerHTML = lines.join('<br>');
+  $('#commentsPanel').classList.remove('hidden');
+  toast('Outline generated');
+}
+
+$('#outlineFromTimeline').addEventListener('click', outlineFromTimeline);
+$('#cheatBtn').addEventListener('click', () => $('#cheatModal').classList.add('active'));
+$('#closeCheat').addEventListener('click', () => $('#cheatModal').classList.remove('active'));
+
+// ============ CONTENT CALENDAR ============
+const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+function drawCalendar() {
+  const grid = $('#calGrid');
+  grid.innerHTML = '';
+
+  // Headers
+  days.forEach((d, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell header';
+    cell.textContent = i === 0 ? 'Week' : d;
+    grid.appendChild(cell);
+  });
+
+  // Rows
+  for (let week = 1; week <= 4; week++) {
+    const weekCell = document.createElement('div');
+    weekCell.className = 'cal-cell header';
+    weekCell.textContent = `Week ${week}`;
+    grid.appendChild(weekCell);
+
+    for (let day = 1; day <= 7; day++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      cell.dataset.week = week;
+      cell.dataset.day = day;
+      grid.appendChild(cell);
+    }
+  }
+
+  // Posts
+  const posts = load('SM_CAL', []);
+  posts.forEach(addPostToGrid);
+}
+
+function addPostToGrid(post) {
+  const cell = $(`.cal-cell[data-week="${post.week}"][data-day="${post.day}"]`);
+  if (!cell) return;
+
+  const el = document.createElement('div');
+  el.className = 'cal-post';
+  el.innerHTML = `<strong>${post.title}</strong><div class="muted text-xs">${post.platform}</div>`;
+  cell.appendChild(el);
+}
+
+$('#addPost').addEventListener('click', () => {
+  const title = $('#newPostTitle').value.trim();
+  if (!title) return;
+
+  const post = {
+    id: Date.now(),
+    title,
+    day: +$('#newPostDay').value,
+    week: 1 + Math.floor(Math.random() * 4),
+    platform: $('#smPlatform').value
+  };
+
+  const cal = load('SM_CAL', []);
+  cal.push(post);
+  store('SM_CAL', cal);
+  addPostToGrid(post);
+  $('#newPostTitle').value = '';
+  toast('Added to calendar');
+});
+
+$('#exportCal').addEventListener('click', () => downloadJSON('sm_calendar.json', load('SM_CAL', [])));
+
+// ============ WRITING HUB ============
+const editor = $('#editor');
+
+$('#toggleComments').addEventListener('click', () => {
+  $('#commentsPanel').classList.toggle('hidden');
+});
+
+$('#addComment').addEventListener('click', () => {
+  const text = $('#newComment').value.trim();
+  if (!text) return;
+
+  const sel = window.getSelection();
+  const id = Date.now().toString();
+
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    if (editor.contains(range.commonAncestorContainer) && !range.collapsed) {
+      const mark = document.createElement('mark');
+      mark.className = 'hl';
+      mark.dataset.cid = id;
+      range.surroundContents(mark);
+    }
+  }
+
+  const comments = load('COMMENTS', []);
+  comments.push({ id, text, created: new Date().toISOString(), resolved: false });
+  store('COMMENTS', comments);
+  $('#newComment').value = '';
+  renderComments();
+});
+
+$('#commentFilter').addEventListener('change', renderComments);
+
+function renderComments() {
+  const list = $('#commentsList');
+  list.innerHTML = '';
+
+  const comments = load('COMMENTS', []);
+  const filter = $('#commentFilter').value;
+
+  comments
+    .filter(c => filter === 'all' || (filter === 'resolved' ? c.resolved : !c.resolved))
+    .forEach(c => {
+      const el = document.createElement('div');
+      el.className = 'comment';
+      el.innerHTML = `
+        <div class="comment-header">
+          <span>${c.resolved ? '✓ Resolved' : 'Comment'}</span>
+          <span>${new Date(c.created).toLocaleDateString()}</span>
+        </div>
+        <p>${c.text}</p>
+        <div class="comment-actions">
+          <button class="btn sm ghost" data-id="${c.id}" data-action="jump">Go to</button>
+          <button class="btn sm ghost" data-id="${c.id}" data-action="toggle">${c.resolved ? 'Reopen' : 'Resolve'}</button>
+          <button class="btn sm ghost" data-id="${c.id}" data-action="delete">Delete</button>
+        </div>
+      `;
+      list.appendChild(el);
+    });
+
+  $$('#commentsList button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const { id, action } = btn.dataset;
+      const comments = load('COMMENTS', []);
+      const idx = comments.findIndex(c => c.id === id);
+      if (idx < 0) return;
+
+      if (action === 'toggle') {
+        comments[idx].resolved = !comments[idx].resolved;
+        editor.querySelectorAll(`mark.hl[data-cid="${id}"]`).forEach(m =>
+          m.classList.toggle('resolved', comments[idx].resolved)
+        );
+      } else if (action === 'delete') {
+        editor.querySelectorAll(`mark.hl[data-cid="${id}"]`).forEach(m => {
+          const parent = m.parentNode;
+          while (m.firstChild) parent.insertBefore(m.firstChild, m);
+          parent.removeChild(m);
+        });
+        comments.splice(idx, 1);
+      } else if (action === 'jump') {
+        const mark = editor.querySelector(`mark.hl[data-cid="${id}"]`);
+        if (mark) mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      store('COMMENTS', comments);
+      renderComments();
+    });
+  });
+}
+
+$('#saveDoc').addEventListener('click', () => {
+  store('DOC', {
+    title: $('#docTitle').value,
+    body: editor.innerHTML,
+    updated: new Date().toISOString()
+  });
+  refreshKPIs();
+  toast('Document saved');
+});
+
+// Share
+$('#shareDocBtn').addEventListener('click', () => $('#shareModal').classList.add('active'));
+$('#closeShare').addEventListener('click', () => $('#shareModal').classList.remove('active'));
+$('#doShare').addEventListener('click', () => {
+  const id = Math.random().toString(36).slice(2, 10);
+  $('#shareLink').value = `https://saturno-hub.com/share/${id}`;
+  toast('Share link generated');
+});
+
+// ============ COLLABORATION ============
+const defaultProjects = [
+  { id: 'c1', title: 'Movement Ecosystem Book', desc: 'Book outline + chapters', owner: 'Gabo Saturno', status: 'active', created: '2025-06-10', last: '2025-06-17' },
+  { id: 'c2', title: 'Philosophy Integration', desc: 'Draft article', owner: 'Editor', status: 'review', created: '2025-06-12', last: '2025-06-18' },
+  { id: 'c3', title: 'Chapter Feedback', desc: 'Chapter review', owner: 'Team', status: 'feedback', created: '2025-06-05', last: '2025-06-18' }
+];
+
+if (!localStorage.getItem('PROJECTS')) store('PROJECTS', defaultProjects);
+
+function drawProjects() {
+  const container = $('#projects');
+  container.innerHTML = '';
+
+  let projects = load('PROJECTS', []);
+  const status = $('#fStatus').value;
+  const sort = $('#fSort').value;
+  const search = $('#fSearch').value.toLowerCase();
+
+  if (status !== 'all') projects = projects.filter(p => p.status === status);
+  if (search) projects = projects.filter(p => p.title.toLowerCase().includes(search));
+
+  projects.sort((a, b) => {
+    if (sort === 'newest') return new Date(b.created) - new Date(a.created);
+    if (sort === 'oldest') return new Date(a.created) - new Date(b.created);
+    return new Date(b.last) - new Date(a.last);
+  });
+
+  projects.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML = `
+      <div class="flex justify-between items-center mb-4">
+        <h3>${p.title}</h3>
+        <span class="project-status ${p.status}">${p.status}</span>
+      </div>
+      <p class="muted text-sm">${p.desc}</p>
+      <p class="muted text-xs mt-4">Owner: ${p.owner}</p>
+      <div class="flex gap-2 mt-4">
+        <button class="btn sm ghost" data-id="${p.id}" data-action="view">View</button>
+        <button class="btn sm primary" data-id="${p.id}" data-action="write">Open in Writing</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  $$('#projects button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const { id, action } = btn.dataset;
+      const project = load('PROJECTS', []).find(p => p.id === id);
+      if (!project) return;
+
+      if (action === 'write') {
+        goTo('writing');
+        $('#docTitle').value = project.title;
+        editor.innerHTML = `<h1>${project.title}</h1><p>${project.desc}</p><p>Use comments for feedback.</p>`;
+        $('#commentsPanel').classList.remove('hidden');
+      }
+    });
+  });
+}
+
+['fStatus', 'fSort', 'fSearch'].forEach(id =>
+  $('#' + id).addEventListener('input', drawProjects)
+);
+
+// ============ ASSETS ============
+const dropZone = $('#dropZone');
+const assetPick = $('#assetPick');
+
+function addAssets(files) {
+  const assets = load('ASSETS', []);
+  [...files].forEach(f => assets.push({
+    id: Date.now() + Math.random(),
+    name: f.name,
+    size: f.size
+  }));
+  store('ASSETS', assets);
+  drawAssets();
+}
+
+function drawAssets() {
+  const filter = $('#assetFilter').value.toLowerCase();
+  const assets = load('ASSETS', []).filter(a => a.name.toLowerCase().includes(filter));
+  const list = $('#assetList');
+  list.innerHTML = '';
+
+  assets.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'asset-item';
+    el.innerHTML = `
+      <span>${a.name} <span class="muted">(${Math.round(a.size / 1024)} KB)</span></span>
+      <button class="btn sm ghost" data-id="${a.id}">Remove</button>
+    `;
+    list.appendChild(el);
+  });
+
+  $$('#assetList button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let assets = load('ASSETS', []);
+      assets = assets.filter(a => a.id != btn.dataset.id);
+      store('ASSETS', assets);
+      drawAssets();
+    });
+  });
+}
+
+dropZone.addEventListener('click', () => assetPick.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('active'); addAssets(e.dataTransfer.files); });
+assetPick.addEventListener('change', e => addAssets(e.target.files));
+$('#assetFilter').addEventListener('input', drawAssets);
+$('#clearAssets').addEventListener('click', () => { store('ASSETS', []); drawAssets(); });
+
+// Video Analyzer
+const video = $('#vPlayer');
+
+$('#vLoad').addEventListener('click', () => {
+  const file = $('#vFile').files[0];
+  if (!file) { toast('Select a video'); return; }
+  video.src = URL.createObjectURL(file);
+  video.classList.remove('hidden');
+  video.load();
+  toast('Video loaded');
+});
+
+$('#markAdd').addEventListener('click', () => {
+  if (video.classList.contains('hidden')) return;
+  const time = video.currentTime.toFixed(2);
+  const note = $('#markNote').value || 'marker';
+  const marks = load('V_MARKS', []);
+  marks.push({ time: +time, note });
+  store('V_MARKS', marks);
+  renderMarks();
+  $('#markNote').value = '';
+});
+
+function renderMarks() {
+  $('#markList').textContent = JSON.stringify(load('V_MARKS', []), null, 2);
+}
+
+$('#markExport').addEventListener('click', () => downloadJSON('video_markers.json', load('V_MARKS', [])));
+
+// ============ AI HUB ============
+$('#copyProgramPrompt').addEventListener('click', () => {
+  const prompt = $('#promptProgram').value + '\n\nMovement DNA JSON:\n' + JSON.stringify(TL_STATE, null, 2);
+  navigator.clipboard.writeText(prompt);
+  toast('Prompt copied');
+});
+
+$('#routeFromTimeline').addEventListener('click', () => {
+  $('#routerNext').textContent = 'program:generate_from_timeline';
+});
+
+['cmdDeploy', 'cmdLive', 'cmdGit'].forEach(id => {
+  $('#' + id).addEventListener('click', () => runCommand($('#' + id).textContent));
+});
+
+// ============ COMMAND PALETTE ============
+const commands = [
+  { id: 'deploy-hub', hint: 'Build & deploy to GitHub Pages' },
+  { id: 'hub-live', hint: 'Open live site' },
+  { id: 'hub-github', hint: 'Open repository' },
+  { id: 'outline', hint: 'Generate outline from timeline' },
+  { id: 'export', hint: 'Export all data as JSON' }
+];
+
+function openPalette() {
+  $('#palette').classList.add('active');
+  $('#palInput').value = '';
+  $('#palInput').focus();
+  renderPaletteList('');
+}
+
+function closePalette() {
+  $('#palette').classList.remove('active');
+}
+
+function renderPaletteList(query) {
+  const filtered = commands.filter(c =>
+    c.id.includes(query) || c.hint.toLowerCase().includes(query)
+  );
+
+  const list = $('#palList');
+  list.innerHTML = '';
+
+  filtered.forEach(cmd => {
+    const el = document.createElement('div');
+    el.className = 'palette-item';
+    el.innerHTML = `
+      <span><strong>${cmd.id}</strong> — <span class="muted">${cmd.hint}</span></span>
+      <span class="kbd">enter</span>
+    `;
+    el.addEventListener('click', () => { runCommand(cmd.id); closePalette(); });
+    list.appendChild(el);
+  });
+}
+
+$('#palInput').addEventListener('input', e => renderPaletteList(e.target.value.toLowerCase()));
+$('#palette').addEventListener('click', e => { if (e.target.id === 'palette') closePalette(); });
+$('#globalSearch').addEventListener('focus', openPalette);
+
+function runCommand(cmd) {
+  const log = $('#cmdLog');
+
+  if (cmd === 'deploy-hub') {
+    log.textContent += '\n$ deploy-hub\n→ building...\n→ deployed to GitHub Pages';
+  } else if (cmd === 'hub-live') {
+    log.textContent += '\n$ hub-live\n→ opening site...';
+    window.open('https://gabosaturno11.github.io/AI-Hub/', '_blank');
+  } else if (cmd === 'hub-github') {
+    log.textContent += '\n$ hub-github\n→ opening repository...';
+  } else if (cmd === 'outline') {
+    outlineFromTimeline();
+  } else if (cmd === 'export') {
+    exportAllData();
+  }
+
+  log.scrollTop = log.scrollHeight;
+  toast('⚡ ' + cmd);
+}
+
+// ============ SAVE & EXPORT ============
+$('#saveAll').addEventListener('click', () => {
+  store('LIB', LIB);
+  store('TL_STATE', TL_STATE);
+  toast('All data saved');
+  refreshKPIs();
+});
+
+$('#exportAll').addEventListener('click', exportAllData);
+
+function exportAllData() {
+  const data = {
+    LIB,
+    TL_STATE,
+    SM_CAL: load('SM_CAL', []),
+    DOC: load('DOC', {}),
+    PROJECTS: load('PROJECTS', []),
+    V_MARKS: load('V_MARKS', []),
+    COMMENTS: load('COMMENTS', [])
+  };
+  downloadJSON('saturno_studio_export.json', data);
+}
+
+// ============ INIT ============
+drawTracks();
+drawLibrary();
+drawCalendar();
+drawProjects();
+drawAssets();
+renderMarks();
+renderComments();
+refreshKPIs();
+
+// Load saved doc
+const savedDoc = load('DOC', { title: '', body: '' });
+if (savedDoc.title) $('#docTitle').value = savedDoc.title;
+if (savedDoc.body) editor.innerHTML = savedDoc.body;
+
+// ============ WEBHUB — LIVE COMMUNICATION ============
+const WEBHUB = {
+  messages: load('WEBHUB_MESSAGES', []),
+  polling: null,
+  connected: false,
+
+  getConfig() {
+    return {
+      repo: $('#webhubRepo').value || 'gabosaturno11/saturno-hub',
+      file: 'webhub_messages.json',
+      token: $('#webhubToken').value || load('WEBHUB_TOKEN', ''),
+      poll: parseInt($('#webhubPoll').value) || 10000
+    };
+  },
+
+  async fetchMessages() {
+    const cfg = this.getConfig();
+    try {
+      const url = `https://api.github.com/repos/${cfg.repo}/contents/${cfg.file}`;
+      const headers = { 'Accept': 'application/vnd.github.v3+json' };
+      if (cfg.token) headers['Authorization'] = `token ${cfg.token}`;
+
+      const res = await fetch(url, { headers, cache: 'no-store' });
+      if (res.status === 404) return [];
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      const content = atob(data.content.replace(/\n/g, ''));
+      const messages = JSON.parse(content);
+      this.sha = data.sha;
+      return messages;
+    } catch (e) {
+      console.warn('Webhub fetch:', e.message);
+      return this.messages;
+    }
+  },
+
+  async pushMessages(messages) {
+    const cfg = this.getConfig();
+    if (!cfg.token) { toast('Set GitHub token to send'); return false; }
+
+    try {
+      const url = `https://api.github.com/repos/${cfg.repo}/contents/${cfg.file}`;
+
+      // Get current SHA
+      const getRes = await fetch(url, {
+        headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      let sha = null;
+      if (getRes.ok) {
+        const existing = await getRes.json();
+        sha = existing.sha;
+      }
+
+      const body = {
+        message: `webhub: ${messages[messages.length - 1].sender} — ${new Date().toISOString()}`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(messages, null, 2)))),
+      };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${cfg.token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!putRes.ok) throw new Error(`Push failed: ${putRes.status}`);
+      return true;
+    } catch (e) {
+      console.error('Webhub push:', e);
+      toast('Push failed: ' + e.message);
+      return false;
+    }
+  },
+
+  renderMessages() {
+    const el = $('#webhubMessages');
+    const EMOJIS = { GABO: '👽', CC1: '🖥️🤖', CC2: '🛸', CL2: '🖥️💬', CC3: '💻🤖' };
+
+    el.innerHTML = this.messages.map(m => {
+      const emoji = EMOJIS[m.sender] || '💬';
+      const time = new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const senderColor = m.sender === 'GABO' ? 'var(--accent)' : '#4ECDC4';
+      return `<div style="margin-bottom: 6px; padding: 6px 8px; border-radius: 4px; background: var(--surface2);">
+        <span style="color: ${senderColor}; font-weight: 600;">${emoji} ${m.sender}</span>
+        <span style="color: var(--muted); margin-left: 8px;">${time}</span>
+        <div style="margin-top: 2px; color: var(--text);">${m.text}</div>
+      </div>`;
+    }).join('');
+
+    el.scrollTop = el.scrollHeight;
+    $('#webhubMsgCount').textContent = this.messages.length + ' messages';
+  },
+
+  renderInstances() {
+    const recent = {};
+    this.messages.slice(-50).forEach(m => { recent[m.sender] = m.ts; });
+    const el = $('#webhubInstances');
+    const EMOJIS = { GABO: '👽', CC1: '🖥️🤖', CC2: '🛸', CL2: '🖥️💬', CC3: '💻🤖' };
+
+    el.innerHTML = Object.entries(recent).map(([sender, ts]) => {
+      const ago = Math.round((Date.now() - new Date(ts)) / 60000);
+      const status = ago < 5 ? '🟢' : ago < 30 ? '🟡' : '🔴';
+      return `<div class="flex justify-between" style="padding: 4px 0;">
+        <span>${EMOJIS[sender] || ''} ${sender}</span>
+        <span class="muted">${status} ${ago}m ago</span>
+      </div>`;
+    }).join('') || '<div class="muted">No activity yet</div>';
+  },
+
+  async connect() {
+    $('#webhubStatus').textContent = 'Connecting...';
+    this.messages = await this.fetchMessages();
+    store('WEBHUB_MESSAGES', this.messages);
+    this.renderMessages();
+    this.renderInstances();
+    this.connected = true;
+    $('#webhubStatus').innerHTML = '<span style="color: var(--success);">● Connected</span>';
+    toast('Webhub connected');
+
+    // Start polling
+    const interval = this.getConfig().poll;
+    if (this.polling) clearInterval(this.polling);
+    if (interval > 0) {
+      this.polling = setInterval(async () => {
+        const fresh = await this.fetchMessages();
+        if (fresh.length !== this.messages.length) {
+          this.messages = fresh;
+          store('WEBHUB_MESSAGES', this.messages);
+          this.renderMessages();
+          this.renderInstances();
+        }
+      }, interval);
+    }
+  },
+
+  async send(sender, text) {
+    if (!text.trim()) return;
+    const msg = { sender, text: text.trim(), ts: new Date().toISOString() };
+    this.messages.push(msg);
+    store('WEBHUB_MESSAGES', this.messages);
+    this.renderMessages();
+    this.renderInstances();
+
+    if (this.getConfig().token) {
+      await this.pushMessages(this.messages);
+    }
+  }
+};
+
+// Webhub event listeners
+$('#webhubConnect').addEventListener('click', () => WEBHUB.connect());
+$('#webhubRefresh').addEventListener('click', () => WEBHUB.connect());
+
+$('#webhubSend').addEventListener('click', () => {
+  const sender = $('#webhubSender').value;
+  const text = $('#webhubInput').value;
+  WEBHUB.send(sender, text);
+  $('#webhubInput').value = '';
+});
+
+$('#webhubInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    $('#webhubSend').click();
+  }
+});
+
+$('#webhubSaveConfig').addEventListener('click', () => {
+  const token = $('#webhubToken').value;
+  if (token) store('WEBHUB_TOKEN', token);
+  store('WEBHUB_REPO', $('#webhubRepo').value);
+  toast('Config saved');
+  if (WEBHUB.connected) WEBHUB.connect();
+});
+
+$('#webhubExport').addEventListener('click', () => {
+  downloadJSON('webhub_messages_export.json', WEBHUB.messages);
+});
+
+$('#webhubClear').addEventListener('click', () => {
+  WEBHUB.messages = [];
+  store('WEBHUB_MESSAGES', []);
+  WEBHUB.renderMessages();
+  toast('Local messages cleared');
+});
+
+// Load saved config
+const savedToken = load('WEBHUB_TOKEN', '');
+if (savedToken) $('#webhubToken').value = savedToken;
+const savedRepo = load('WEBHUB_REPO', '');
+if (savedRepo) $('#webhubRepo').value = savedRepo;
+
+// Render cached messages on load
+WEBHUB.renderMessages();
+</script>
+</body>
+</html>
